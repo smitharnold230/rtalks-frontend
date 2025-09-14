@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - R-TALKS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="login-form">
+            <h1>Admin Login</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="email" required placeholder="Email" value="admin@rtalks.com">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" required placeholder="Password">
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p id="error-message" class="error-text"></p>
+            
+            <!-- JWT Issue Help Notice -->
+            <div id="jwt-help" style="display: none; background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin-top: 15px; border-radius: 8px; font-size: 14px;">
+                <strong>🔑 JWT_SECRET Configuration Issue!</strong><br>
+                Since admin user exists in database, add <strong>JWT_SECRET</strong> environment variable to Render backend.<br><br>
+                <strong>🔧 Quick Fix:</strong><br>
+                1. Render Dashboard → Backend Service → Environment<br>
+                2. Add: <code>JWT_SECRET = rtalks-jwt-secret-2025-min-32-chars</code><br>
+                3. Save and wait 1-2 minutes for restart
+            </div>
+            
+            <!-- Debug information -->
+            <div id="debug-info" style="margin-top: 20px; padding: 10px; background: #f8f9fa; border-radius: 4px; font-size: 12px; font-family: monospace;">
+                <strong>Debug Info:</strong><br>
+                API URL: <span id="debug-api-url"></span><br>
+                Status: <span id="debug-status">Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/config.js"></script>
+    <script>
+        // Always use production API for admin panel
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+        
+        console.log('🔗 Admin Login using API URL:', API_URL);
+        
+        // Update debug info
+        document.getElementById('debug-api-url').textContent = API_URL;
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    window.location.href = '/admin/index.html';
+                } else {
+                    document.getElementById('error-message').textContent = data.error || 'Login failed';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                document.getElementById('error-message').textContent = 'Login failed. Please try again.';
+            }
+        });
+        
+        // Test API connectivity on page load
+        async function testApiConnectivity() {
+            try {
+                const response = await fetch(`${API_URL.replace('/api', '')}/api/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Backend health check successful:', data);
+                    document.getElementById('debug-status').textContent = `Backend online (DB: ${data.database})`;
+                } else {
+                    console.log('⚠️ Backend health check failed:', response.status);
+                    document.getElementById('debug-status').textContent = `Backend error: ${response.status}`;
+                }
+            } catch (error) {
+                console.log('❌ Backend connectivity test failed:', error);
+                document.getElementById('debug-status').textContent = 'Backend offline or unreachable';
+            }
+        }
+        
+        // Run connectivity test
+        testApiConnectivity();
+    </script>
+</body>
+</html>

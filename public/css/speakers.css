@@ -1,0 +1,162 @@
+/* Speakers Section Styles */
+.speakers-section {
+    width: 100%;
+    max-width: 100vw;
+    overflow: hidden;
+    padding: 4rem 0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-align: center;
+    margin: 0 0 0.5rem;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: #FFFFFF;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    opacity: 0.9;
+}
+
+/* Carousel Styles */
+.carousel {
+    width: 100%;
+    max-width: 1400px;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 2rem;
+    animation: scroll 10s linear infinite;
+    padding: 1rem;
+}
+
+.carousel article {
+    min-width: 300px;
+    max-width: 300px;
+    flex-shrink: 0;
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.carousel article:hover {
+    transform: translateY(-5px);
+}
+
+.speaker-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+    border: 4px solid #6B46C1;
+}
+
+.speaker-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 0.75rem;
+}
+
+.speaker-title {
+    color: #6B46C1;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.speaker-company {
+    color: #718096;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.speaker-bio {
+    font-size: 0.9rem;
+    color: #4A5568;
+    line-height: 1.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    max-width: 280px;
+    margin: 0;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-50% - 1rem));
+    }
+}
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+    .carousel article {
+        min-width: 250px;
+        max-width: 250px;
+        padding: 1.5rem;
+    }
+    
+    .speaker-image {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .speaker-name {
+        font-size: 1.25rem;
+    }
+}
+
+/* Gradient masks for smooth fade effect */
+.carousel::before,
+.carousel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 15%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.carousel::before {
+    left: 0;
+    /* background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 100%); */
+}
+
+.carousel::after {
+    right: 0;
+    /* background: linear-gradient(to left, rgba(0,0,0,0.8) 0%, transparent 100%); */
+}
+
+/* Add hover pause effect */
+.carousel:hover .carousel-track {
+    animation-play-state: paused;
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 0 20px; }
+        .result { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #e6ffe6; border: 1px solid #00cc00; }
+        .error { background: #ffe6e6; border: 1px solid #cc0000; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>Backend Connection Test</h1>
+    <button onclick="testBackendConnection()">Test Backend Connection</button>
+    <div id="results"></div>
+
+    <script>
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+        
+        async function testBackendConnection() {
+            const results = document.getElementById('results');
+            
+            // Test health endpoint
+            try {
+                console.log('Testing health endpoint...');
+                results.innerHTML += `<div class="result">Testing ${API_URL}/health...</div>`;
+                
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                results.innerHTML += `
+                    <div class="result success">
+                        <h3>✅ Backend is accessible!</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+                
+                console.log('Backend response:', data);
+            } catch (error) {
+                results.innerHTML += `
+                    <div class="result error">
+                        <h3>❌ Error accessing backend</h3>
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

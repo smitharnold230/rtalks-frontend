@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Connection Test - R-Talks</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .test-card {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        .test-card.success {
+            border-color: #4CAF50;
+            background-color: #f0f8f0;
+        }
+        .test-card.error {
+            border-color: #f44336;
+            background-color: #fdf0f0;
+        }
+        .test-card.loading {
+            border-color: #ff9800;
+            background-color: #fff8f0;
+        }
+        .test-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-icon.success { background: #4CAF50; }
+        .status-icon.error { background: #f44336; }
+        .status-icon.loading { background: #ff9800; }
+        .status-icon.pending { background: #ccc; }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result-area {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .info-section {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .summary {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .endpoint-url {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ R-Talks Database Connection Test</h1>
+        
+        <div class="info-section">
+            <h3>📋 Configuration</h3>
+            <p><strong>Frontend URL:</strong> <span id="frontend-url"></span></p>
+            <p><strong>Backend API URL:</strong> <span id="backend-url"></span></p>
+            <p><strong>Database:</strong> PostgreSQL on Render</p>
+            <p><strong>Test Mode:</strong> Production Environment</p>
+        </div>
+
+        <div class="test-grid">
+            <div class="test-card" id="health-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="health-icon"></span>
+                    🏥 Backend Health Check
+                </div>
+                <p>Tests if backend server is running and database connected</p>
+                <div class="endpoint-url">GET /api/health</div>
+                <button onclick="testHealth()" id="health-btn">Test Health</button>
+                <div class="result-area" id="health-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="event-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="event-icon"></span>
+                    📅 Event Data
+                </div>
+                <p>Tests event details from database</p>
+                <div class="endpoint-url">GET /api/event</div>
+                <button onclick="testEvent()" id="event-btn">Test Events</button>
+                <div class="result-area" id="event-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="packages-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="packages-icon"></span>
+                    📦 Event Packages
+                </div>
+                <p>Tests package data from database</p>
+                <div class="endpoint-url">GET /api/packages</div>
+                <button onclick="testPackages()" id="packages-btn">Test Packages</button>
+                <div class="result-area" id="packages-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="stats-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="stats-icon"></span>
+                    📊 Statistics
+                </div>
+                <p>Tests stats data from database</p>
+                <div class="endpoint-url">GET /api/stats</div>
+                <button onclick="testStats()" id="stats-btn">Test Stats</button>
+                <div class="result-area" id="stats-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="speakers-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="speakers-icon"></span>
+                    🎤 Speakers
+                </div>
+                <p>Tests speakers data from database</p>
+                <div class="endpoint-url">GET /api/speakers</div>
+                <button onclick="testSpeakers()" id="speakers-btn">Test Speakers</button>
+                <div class="result-area" id="speakers-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="contact-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="contact-icon"></span>
+                    📞 Contact Info
+                </div>
+                <p>Tests contact information from database</p>
+                <div class="endpoint-url">GET /api/contact-info</div>
+                <button onclick="testContact()" id="contact-btn">Test Contact</button>
+                <div class="result-area" id="contact-result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="runAllTests()" id="run-all-btn" style="font-size: 16px; padding: 15px 30px;">
+                🚀 Run All Database Tests
+            </button>
+        </div>
+
+        <div class="summary" id="summary" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Always use production API for testing
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+        
+        // Alternative: Use environment detection
+        // const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        //     ? 'http://localhost:5000/api'
+        //     : 'https://rtalks-back.onrender.com/api';
+
+        let testResults = {};
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('frontend-url').textContent = window.location.origin;
+            document.getElementById('backend-url').textContent = API_URL;
+            console.log('🔗 Using API URL:', API_URL);
+        });
+
+        async function makeTestRequest(endpoint, cardId, iconId, resultId, btnId) {
+            const card = document.getElementById(cardId);
+            const icon = document.getElementById(iconId);
+            const result = document.getElementById(resultId);
+            const btn = document.getElementById(btnId);
+            
+            // Set loading state
+            card.className = 'test-card loading';
+            icon.className = 'status-icon loading';
+            result.style.display = 'block';
+            result.innerHTML = '<div style="color: #ff9800;">⏳ Testing connection...</div>';
+            btn.disabled = true;
+            
+            try {
+                console.log(`🔍 Testing endpoint: ${API_URL}/${endpoint}`);
+                
+                const startTime = Date.now();
+                const response = await fetch(`${API_URL}/${endpoint}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Success
+                    card.className = 'test-card success';
+                    icon.className = 'status-icon success';
+                    
+                    const dataPreview = typeof data === 'object' ? 
+                        JSON.stringify(data, null, 2).substring(0, 500) + (JSON.stringify(data).length > 500 ? '...' : '') :
+                        data;
+                    
+                    result.innerHTML = `
+                        <div style="color: #4CAF50; font-weight: bold;">✅ SUCCESS</div>
+                        <p><strong>Status:</strong> ${response.status} ${response.statusText}</p>
+                        <p><strong>Response Time:</strong> ${duration}ms</p>
+                        <p><strong>Data Preview:</strong></p>
+                        <pre style="max-height: 150px; overflow-y: auto;">${dataPreview}</pre>
+                    `;
+                    
+                    testResults[endpoint] = { success: true, status: response.status, duration, data: data };
+                    
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+            } catch (error) {
+                // Error
+                card.className = 'test-card error';
+                icon.className = 'status-icon error';
+                
+                let errorMessage = error.message;
+                let troubleshooting = [];
+                
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    troubleshooting = [
+                        'Backend server might be down',
+                        'CORS configuration issue',
+                        'Network connectivity problem',
+                        'Incorrect API URL'
+                    ];
+                } else if (error.message.includes('500')) {
+                    troubleshooting = [
+                        'Database connection issue',
+                        'Server internal error',
+                        'Check backend logs'
+                    ];
+                } else if (error.message.includes('503')) {
+                    troubleshooting = [
+                        'Service temporarily unavailable',
+                        'Database not responding',
+                        'Server overloaded'
+                    ];
+                }
+                
+                result.innerHTML = `
+                    <div style="color: #f44336; font-weight: bold;">❌ FAILED</div>
+                    <p><strong>Error:</strong> ${errorMessage}</p>
+                    ${troubleshooting.length > 0 ? `
+                        <p><strong>Possible Issues:</strong></p>
+                        <ul>
+                            ${troubleshooting.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    ` : ''}
+                `;
+                
+                testResults[endpoint] = { success: false, error: errorMessage };
+                console.error(`❌ Test failed for ${endpoint}:`, error);
+            }
+            
+            btn.disabled = false;
+        }
+
+        function testHealth() {
+            makeTestRequest('health', 'health-card', 'health-icon', 'health-result', 'health-btn');
+        }
+
+        function testEvent() {
+            makeTestRequest('event', 'event-card', 'event-icon', 'event-result', 'event-btn');
+        }
+
+        function testPackages() {
+            makeTestRequest('packages', 'packages-card', 'packages-icon', 'packages-result', 'packages-btn');
+        }
+
+        function testStats() {
+            makeTestRequest('stats', 'stats-card', 'stats-icon', 'stats-result', 'stats-btn');
+        }
+
+        function testSpeakers() {
+            makeTestRequest('speakers', 'speakers-card', 'speakers-icon', 'speakers-result', 'speakers-btn');
+        }
+
+        function testContact() {
+            makeTestRequest('contact-info', 'contact-card', 'contact-icon', 'contact-result', 'contact-btn');
+        }
+
+        async function runAllTests() {
+            const runAllBtn = document.getElementById('run-all-btn');
+            runAllBtn.disabled = true;
+            runAllBtn.textContent = '⏳ Running Tests...';
+            
+            testResults = {};
+            
+            const tests = [
+                { name: 'Health Check', func: testHealth },
+                { name: 'Event Data', func: testEvent },
+                { name: 'Packages', func: testPackages },
+                { name: 'Statistics', func: testStats },
+                { name: 'Speakers', func: testSpeakers },
+                { name: 'Contact Info', func: testContact }
+            ];
+            
+            for (let i = 0; i < tests.length; i++) {
+                console.log(`Running test ${i + 1}/${tests.length}: ${tests[i].name}`);
+                await tests[i].func();
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay between tests
+            }
+            
+            // Show summary
+            showSummary();
+            
+            runAllBtn.disabled = false;
+            runAllBtn.textContent = '🚀 Run All Database Tests';
+        }
+
+        function showSummary() {
+            const summary = document.getElementById('summary');
+            const results = Object.keys(testResults);
+            const successful = results.filter(key => testResults[key].success);
+            const failed = results.filter(key => !testResults[key].success);
+            
+            const successRate = results.length > 0 ? Math.round((successful.length / results.length) * 100) : 0;
+            
+            let summaryContent = `
+                <h3>📊 Test Summary</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">${successful.length}</div>
+                        <div>Tests Passed</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #f44336;">${failed.length}</div>
+                        <div>Tests Failed</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #667eea;">${successRate}%</div>
+                        <div>Success Rate</div>
+                    </div>
+                </div>
+            `;
+            
+            if (successful.length === results.length && results.length > 0) {
+                summaryContent += `
+                    <div style="color: #4CAF50; font-weight: bold; text-align: center; margin: 20px 0;">
+                        🎉 All database connections are working perfectly!<br>
+                        Your R-Talks backend and database are fully operational.
+                    </div>
+                `;
+            } else if (failed.length > 0) {
+                summaryContent += `
+                    <div style="color: #f44336; font-weight: bold; text-align: center; margin: 20px 0;">
+                        ⚠️ Some database connections are failing.<br>
+                        Please check the backend logs and database configuration.
+                    </div>
+                `;
+                
+                if (failed.includes('health')) {
+                    summaryContent += `
+                        <div style="background: #fdf0f0; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <strong>🚨 Critical Issue:</strong> Backend health check failed. This indicates the backend server is not responding or the database connection is broken.
+                        </div>
+                    `;
+                }
+            }
+            
+            summary.innerHTML = summaryContent;
+            summary.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

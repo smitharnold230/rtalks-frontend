@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Debug - R-TALKS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentication Debug Tool</h1>
+        <p>This tool helps diagnose the redirect loop between login and admin dashboard.</p>
+
+        <div class="test-section">
+            <h3>📋 Current Status</h3>
+            <div id="statusInfo"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🍪 Cookie Analysis</h3>
+            <button onclick="analyzeCookies()">Analyze Cookies</button>
+            <div id="cookieResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔑 Authentication Test</h3>
+            <button onclick="testAuth()">Test Current Authentication</button>
+            <div id="authResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Login Flow Test</h3>
+            <div style="margin: 15px 0;">
+                <input type="email" id="testEmail" placeholder="Admin Email" value="admin@rtalks.com" style="padding: 10px; margin: 5px; width: 200px;">
+                <input type="password" id="testPassword" placeholder="Admin Password" style="padding: 10px; margin: 5px; width: 200px;">
+            </div>
+            <button onclick="testLoginFlow()">Test Complete Login Flow</button>
+            <div id="loginFlowResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🌐 CORS & Domain Analysis</h3>
+            <button onclick="testCORS()">Test CORS Configuration</button>
+            <div id="corsResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Fixes & Solutions</h3>
+            <div id="solutionsArea">
+                <p>Run the tests above to get specific solutions for your authentication issue.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+
+        function showResult(elementId, message, type) {
+            document.getElementById(elementId).innerHTML = `<div class="result ${type}">${message}</div>`;
+        }
+
+        function updateStatus() {
+            const statusInfo = document.getElementById('statusInfo');
+            statusInfo.innerHTML = `
+                <div class="info">
+                    <strong>Frontend URL:</strong> ${window.location.origin}<br>
+                    <strong>Backend API:</strong> ${API_URL}<br>
+                    <strong>Current Page:</strong> ${window.location.pathname}<br>
+                    <strong>Domain Match:</strong> ${window.location.origin.includes('localhost') ? 'Local Development' : 'Production'}
+                </div>
+            `;
+        }
+
+        function analyzeCookies() {
+            const cookies = document.cookie;
+            const cookieResults = document.getElementById('cookieResults');
+            
+            if (!cookies) {
+                showResult('cookieResults', 
+                    '❌ No cookies found!<br>' +
+                    'This explains the redirect loop. The login is not setting cookies properly.<br><br>' +
+                    '<strong>Likely Causes:</strong><br>' +
+                    '• CORS cookie sharing issue between domains<br>' +
+                    '• Backend cookie settings incorrect<br>' +
+                    '• Secure cookie settings require HTTPS', 
+                    'error'
+                );
+                return;
+            }
+
+            const adminToken = cookies.includes('adminToken');
+            const cookieList = cookies.split(';').map(c => c.trim());
+            
+            let analysis = `<strong>🍪 Found ${cookieList.length} cookie(s):</strong><br>`;
+            cookieList.forEach(cookie => {
+                analysis += `• ${cookie}<br>`;
+            });
+            
+            if (adminToken) {
+                analysis += '<br>✅ adminToken cookie found! This should work.';
+                showResult('cookieResults', analysis, 'success');
+            } else {
+                analysis += '<br>❌ adminToken cookie missing! This is the problem.';
+                showResult('cookieResults', analysis, 'error');
+            }
+        }
+
+        async function testAuth() {
+            showResult('authResults', '🔄 Testing authentication...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/check-auth`, {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const responseText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    data = { error: 'Invalid JSON response', raw: responseText };
+                }
+
+                if (response.ok) {
+                    showResult('authResults', 
+                        `✅ Authentication PASSED!<br>
+                        Status: ${response.status}<br>
+                        Response: ${JSON.stringify(data, null, 2)}<br><br>
+                        ✨ You should be able to access admin dashboard!`, 
+                        'success'
+                    );
+                } else {
+                    showResult('authResults', 
+                        `❌ Authentication FAILED<br>
+                        Status: ${response.status}<br>
+                        Response: ${JSON.stringify(data, null, 2)}<br><br>
+                        ${response.status === 401 ? 'This explains the redirect loop!' : 'Unexpected error'}`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('authResults', 
+                    `❌ Auth test error: ${error.message}<br>
+                    This could indicate network or CORS issues.`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testLoginFlow() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                showResult('loginFlowResults', '⚠️ Please enter email and password', 'error');
+                return;
+            }
+
+            showResult('loginFlowResults', '🔄 Testing complete login flow...', 'info');
+            
+            try {
+                // Step 1: Login
+                console.log('Step 1: Attempting login...');
+                const loginResponse = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const loginData = await loginResponse.json();
+                
+                if (!loginResponse.ok) {
+                    showResult('loginFlowResults', 
+                        `❌ Login failed at step 1<br>
+                        Status: ${loginResponse.status}<br>
+                        Error: ${loginData.error}`, 
+                        'error'
+                    );
+                    return;
+                }
+
+                // Step 2: Check cookies after login
+                console.log('Step 2: Checking cookies after login...');
+                const cookiesAfterLogin = document.cookie;
+                console.log('Cookies after login:', cookiesAfterLogin);
+                
+                // Step 3: Test auth immediately
+                console.log('Step 3: Testing auth immediately after login...');
+                const authResponse = await fetch(`${API_URL}/admin/check-auth`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const authData = await authResponse.json().catch(() => ({}));
+
+                let result = `<strong>📊 Login Flow Analysis:</strong><br><br>`;
+                result += `<strong>Step 1 - Login:</strong> ✅ Success<br>`;
+                result += `<strong>Step 2 - Cookies:</strong> ${cookiesAfterLogin ? '✅ Found' : '❌ Missing'}<br>`;
+                result += `<strong>Step 3 - Auth Check:</strong> ${authResponse.ok ? '✅ Passed' : '❌ Failed (' + authResponse.status + ')'}<br><br>`;
+                
+                if (authResponse.ok) {
+                    result += `✅ <strong>LOGIN FLOW WORKS!</strong><br>The issue might be timing or page-specific.`;
+                    showResult('loginFlowResults', result, 'success');
+                } else {
+                    result += `❌ <strong>LOGIN FLOW BROKEN!</strong><br>`;
+                    result += `Login succeeds but auth check fails immediately.<br>`;
+                    result += `This confirms the cookie/authentication issue.`;
+                    showResult('loginFlowResults', result, 'error');
+                }
+
+            } catch (error) {
+                showResult('loginFlowResults', 
+                    `❌ Login flow test error: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testCORS() {
+            showResult('corsResults', '🔄 Testing CORS configuration...', 'info');
+            
+            try {
+                const response = await fetch(`${API_URL.replace('/api', '')}/api/health`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
+                let analysis = `<strong>🌐 CORS Analysis:</strong><br><br>`;
+                analysis += `<strong>Frontend Domain:</strong> ${window.location.origin}<br>`;
+                analysis += `<strong>Backend Domain:</strong> ${API_URL.replace('/api', '')}<br>`;
+                analysis += `<strong>Cross-Origin:</strong> ${window.location.origin !== API_URL.replace('/api', '') ? 'Yes' : 'No'}<br>`;
+                analysis += `<strong>Health Check:</strong> ${response.ok ? '✅ Success' : '❌ Failed'}<br><br>`;
+                
+                if (response.ok) {
+                    analysis += `✅ Basic CORS is working<br>`;
+                    analysis += `Backend Environment: ${data.environment}<br>`;
+                    analysis += `Database Status: ${data.database}<br><br>`;
+                    
+                    if (window.location.origin !== API_URL.replace('/api', '')) {
+                        analysis += `⚠️ <strong>Cross-origin detected!</strong><br>`;
+                        analysis += `This might cause cookie issues. Backend needs:<br>`;
+                        analysis += `• ALLOWED_ORIGINS should include: ${window.location.origin}<br>`;
+                        analysis += `• Cookies should be configured for cross-origin sharing`;
+                    } else {
+                        analysis += `✅ Same-origin - should work perfectly`;
+                    }
+                } else {
+                    analysis += `❌ CORS is not working properly`;
+                }
+                
+                showResult('corsResults', analysis, response.ok ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('corsResults', 
+                    `❌ CORS test failed: ${error.message}<br>
+                    This indicates network connectivity or CORS blocking issues.`, 
+                    'error'
+                );
+            }
+        }
+
+        // Initialize
+        updateStatus();
+        analyzeCookies();
+    </script>
+</body>
+</html>

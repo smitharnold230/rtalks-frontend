@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin API Diagnostics - R-Talks</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; text-align: center; }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .test-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f9f9fa;
+        }
+        .test-card.success { border-color: #28a745; background: #d4edda; }
+        .test-card.error { border-color: #dc3545; background: #f8d7da; }
+        .test-card.loading { border-color: #ffc107; background: #fff3cd; }
+        
+        .test-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-icon.success { background: #28a745; }
+        .status-icon.error { background: #dc3545; }
+        .status-icon.loading { background: #ffc107; }
+        .status-icon.pending { background: #6c757d; }
+        
+        button {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        
+        .result-area {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        .info-panel {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .login-test {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .credentials {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Admin API Diagnostics</h1>
+        
+        <div class="info-panel">
+            <h3>📋 System Information</h3>
+            <p><strong>Backend URL:</strong> <span id="backend-url"></span></p>
+            <p><strong>Admin Login Endpoint:</strong> <span id="login-endpoint"></span></p>
+            <p><strong>Expected Credentials:</strong> admin@rtalks.com / [password from backend env]</p>
+            <p><strong>Purpose:</strong> Diagnose admin panel connection and database issues</p>
+        </div>
+
+        <div class="login-test">
+            <h3>🔐 Admin Login Test</h3>
+            <div class="credentials">
+                <input type="email" id="test-email" placeholder="Email" value="admin@rtalks.com">
+                <input type="password" id="test-password" placeholder="Password">
+            </div>
+            <button onclick="testAdminLogin()">Test Admin Login</button>
+            <div id="login-result" class="result-area" style="display: none;"></div>
+        </div>
+
+        <div class="test-grid">
+            <div class="test-card" id="health-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="health-icon"></span>
+                    🏥 Backend Health Check
+                </div>
+                <p>Verify backend server is running and database connected</p>
+                <button onclick="testHealth()">Test Health</button>
+                <div class="result-area" id="health-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="database-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="database-icon"></span>
+                    🗄️ Database Structure Check
+                </div>
+                <p>Check if required admin tables exist</p>
+                <button onclick="testDatabaseStructure()">Test Database</button>
+                <div class="result-area" id="database-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="admin-endpoints-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="admin-endpoints-icon"></span>
+                    🔗 Admin Endpoints Check
+                </div>
+                <p>Verify admin API endpoints are accessible</p>
+                <button onclick="testAdminEndpoints()">Test Endpoints</button>
+                <div class="result-area" id="admin-endpoints-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="cors-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="cors-icon"></span>
+                    🌐 CORS Configuration
+                </div>
+                <p>Test cross-origin request handling</p>
+                <button onclick="testCORS()">Test CORS</button>
+                <div class="result-area" id="cors-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="jwt-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="jwt-icon"></span>
+                    🔑 JWT Configuration
+                </div>
+                <p>Test JWT token handling</p>
+                <button onclick="testJWT()">Test JWT</button>
+                <div class="result-area" id="jwt-result" style="display: none;"></div>
+            </div>
+
+            <div class="test-card" id="public-api-card">
+                <div class="test-title">
+                    <span class="status-icon pending" id="public-api-icon"></span>
+                    📊 Public API Endpoints
+                </div>
+                <p>Test non-admin API endpoints</p>
+                <button onclick="testPublicAPIs()">Test Public APIs</button>
+                <div class="result-area" id="public-api-result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button onclick="runAllTests()" style="font-size: 16px; padding: 12px 24px;">
+                🚀 Run All Diagnostic Tests
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+        const BASE_URL = 'https://rtalks-back.onrender.com';
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('backend-url').textContent = BASE_URL;
+            document.getElementById('login-endpoint').textContent = `${API_URL}/admin/login`;
+        });
+
+        function updateTestCard(cardId, iconId, status, content) {
+            const card = document.getElementById(cardId);
+            const icon = document.getElementById(iconId);
+            const resultDiv = card.querySelector('.result-area');
+            
+            card.className = `test-card ${status}`;
+            icon.className = `status-icon ${status}`;
+            resultDiv.innerHTML = content;
+            resultDiv.style.display = 'block';
+        }
+
+        async function testHealth() {
+            const cardId = 'health-card';
+            const iconId = 'health-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing backend health...');
+            
+            try {
+                const response = await fetch(`${BASE_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateTestCard(cardId, iconId, 'success', `
+                        <strong>✅ Backend is healthy!</strong><br>
+                        Status: ${data.status}<br>
+                        Environment: ${data.environment}<br>
+                        Database: ${data.database}<br>
+                        Service: ${data.service}<br>
+                        Version: ${data.version}
+                    `);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateTestCard(cardId, iconId, 'error', `
+                    <strong>❌ Backend health check failed</strong><br>
+                    Error: ${error.message}<br>
+                    <em>This indicates the backend server is not responding correctly.</em>
+                `);
+            }
+        }
+
+        async function testAdminLogin() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            const resultDiv = document.getElementById('login-result');
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '<strong>❌ Please enter both email and password</strong>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            resultDiv.innerHTML = '⏳ Testing admin login...';
+            resultDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    resultDiv.innerHTML = `
+                        <strong style="color: green;">✅ Login successful!</strong><br>
+                        Response: ${JSON.stringify(data, null, 2)}<br>
+                        <em>Admin credentials are working correctly.</em>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong style="color: red;">❌ Login failed</strong><br>
+                        Status: ${response.status}<br>
+                        Error: ${data.error || 'Unknown error'}<br>
+                        <strong>Possible causes:</strong><br>
+                        • Admin account doesn't exist in database<br>
+                        • Wrong password<br>
+                        • Database connection issues<br>
+                        • JWT_SECRET not configured
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <strong style="color: red;">❌ Login test failed</strong><br>
+                    Error: ${error.message}<br>
+                    <em>Network or server error occurred.</em>
+                `;
+            }
+        }
+
+        async function testDatabaseStructure() {
+            const cardId = 'database-card';
+            const iconId = 'database-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing database structure...');
+            
+            try {
+                // Test various endpoints that require database tables
+                const tests = [
+                    { name: 'Events Table', endpoint: 'event' },
+                    { name: 'Packages Table', endpoint: 'packages' },
+                    { name: 'Stats Table', endpoint: 'stats' }
+                ];
+                
+                const results = [];
+                for (const test of tests) {
+                    try {
+                        const response = await fetch(`${API_URL}/${test.endpoint}`);
+                        const data = await response.json();
+                        results.push(`✅ ${test.name}: OK`);
+                    } catch (error) {
+                        results.push(`❌ ${test.name}: ${error.message}`);
+                    }
+                }
+                
+                updateTestCard(cardId, iconId, 'success', `
+                    <strong>Database Structure Test Results:</strong><br>
+                    ${results.join('<br>')}
+                `);
+            } catch (error) {
+                updateTestCard(cardId, iconId, 'error', `
+                    <strong>❌ Database structure test failed</strong><br>
+                    Error: ${error.message}
+                `);
+            }
+        }
+
+        async function testAdminEndpoints() {
+            const cardId = 'admin-endpoints-card';
+            const iconId = 'admin-endpoints-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing admin endpoints...');
+            
+            const endpoints = [
+                'admin/check-auth',
+                'admin/stats', 
+                'admin/orders',
+                'admin/packages',
+                'admin/speakers',
+                'admin/content'
+            ];
+            
+            const results = [];
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_URL}/${endpoint}`, {
+                        credentials: 'include'
+                    });
+                    
+                    if (response.status === 401) {
+                        results.push(`🔒 ${endpoint}: Requires authentication (expected)`);
+                    } else if (response.ok) {
+                        results.push(`✅ ${endpoint}: Accessible`);
+                    } else {
+                        results.push(`⚠️ ${endpoint}: HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${endpoint}: ${error.message}`);
+                }
+            }
+            
+            updateTestCard(cardId, iconId, 'success', `
+                <strong>Admin Endpoints Test:</strong><br>
+                ${results.join('<br>')}
+            `);
+        }
+
+        async function testCORS() {
+            const cardId = 'cors-card';
+            const iconId = 'cors-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing CORS configuration...');
+            
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+                
+                if (response.ok) {
+                    updateTestCard(cardId, iconId, 'success', `
+                        <strong>✅ CORS is working correctly</strong><br>
+                        Origin: ${window.location.origin}<br>
+                        Status: ${response.status}<br>
+                        <em>Frontend can communicate with backend.</em>
+                    `);
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                updateTestCard(cardId, iconId, 'error', `
+                    <strong>❌ CORS configuration issue</strong><br>
+                    Error: ${error.message}<br>
+                    Origin: ${window.location.origin}<br>
+                    <em>Backend needs to allow this origin in CORS settings.</em>
+                `);
+            }
+        }
+
+        async function testJWT() {
+            const cardId = 'jwt-card';
+            const iconId = 'jwt-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing JWT configuration...');
+            
+            try {
+                // Try accessing protected endpoint without token
+                const response = await fetch(`${API_URL}/admin/check-auth`, {
+                    credentials: 'include'
+                });
+                
+                if (response.status === 401) {
+                    const data = await response.json();
+                    updateTestCard(cardId, iconId, 'success', `
+                        <strong>✅ JWT protection is working</strong><br>
+                        Status: ${response.status}<br>
+                        Message: ${data.error}<br>
+                        <em>Protected endpoints are properly secured.</em>
+                    `);
+                } else {
+                    updateTestCard(cardId, iconId, 'error', `
+                        <strong>⚠️ Unexpected JWT behavior</strong><br>
+                        Status: ${response.status}<br>
+                        <em>Protected endpoint should return 401 when unauthenticated.</em>
+                    `);
+                }
+            } catch (error) {
+                updateTestCard(cardId, iconId, 'error', `
+                    <strong>❌ JWT test failed</strong><br>
+                    Error: ${error.message}
+                `);
+            }
+        }
+
+        async function testPublicAPIs() {
+            const cardId = 'public-api-card';
+            const iconId = 'public-api-icon';
+            updateTestCard(cardId, iconId, 'loading', '⏳ Testing public API endpoints...');
+            
+            const endpoints = ['event', 'packages', 'stats', 'speakers', 'contact-info'];
+            const results = [];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_URL}/${endpoint}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        results.push(`✅ ${endpoint}: OK (${JSON.stringify(data).length} chars)`);
+                    } else {
+                        results.push(`❌ ${endpoint}: HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${endpoint}: ${error.message}`);
+                }
+            }
+            
+            updateTestCard(cardId, iconId, 'success', `
+                <strong>Public API Test Results:</strong><br>
+                ${results.join('<br>')}
+            `);
+        }
+
+        async function runAllTests() {
+            console.log('🚀 Running all diagnostic tests...');
+            
+            await testHealth();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testCORS();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testDatabaseStructure();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testPublicAPIs();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testAdminEndpoints();
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            await testJWT();
+            
+            console.log('✅ All diagnostic tests completed');
+        }
+    </script>
+</body>
+</html>

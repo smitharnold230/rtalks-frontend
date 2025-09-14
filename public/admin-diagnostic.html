@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Diagnostic</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 2px solid #ddd; border-radius: 8px; }
+        .success { border-color: #4CAF50; background: #f0f8f0; }
+        .error { border-color: #f44336; background: #fdf0f0; }
+        button { background: #6B46C1; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        .result { margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Admin Login Diagnostic</h1>
+    
+    <div class="test-section" id="login-test">
+        <h3>🔑 Test Admin Login</h3>
+        <p>Tests admin login with common credentials</p>
+        <input type="email" id="email" value="admin@rtalks.com" style="padding: 8px; width: 200px;">
+        <input type="password" id="password" value="admin123" style="padding: 8px; width: 150px;">
+        <button onclick="testLogin()">Test Login</button>
+        <div class="result" id="login-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section" id="health-test">
+        <h3>🏥 Test Backend Health</h3>
+        <button onclick="testHealth()">Test Backend</button>
+        <div class="result" id="health-result" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+        console.log('🔗 Using API URL:', API_URL);
+
+        async function testLogin() {
+            const section = document.getElementById('login-test');
+            const result = document.getElementById('login-result');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            result.style.display = 'block';
+            result.innerHTML = '⏳ Testing login...';
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    section.className = 'test-section success';
+                    result.innerHTML = `✅ LOGIN SUCCESS<br>Credentials: ${email} / ${password}<br>🎉 Admin panel is ready to use!`;
+                } else if (response.status === 401) {
+                    section.className = 'test-section error';
+                    result.innerHTML = `❌ INVALID CREDENTIALS<br>Error: ${data.error}<br>Since admin user exists, check if password is correct.`;
+                } else if (response.status === 500) {
+                    section.className = 'test-section error';
+                    result.innerHTML = `❌ JWT_SECRET ISSUE<br>Error: ${data.error}<br><br><strong>🔧 SOLUTION:</strong><br>1. Go to your <strong>Render Dashboard</strong><br>2. Select your backend service<br>3. Go to <strong>Environment</strong> tab<br>4. Add variable: <strong>JWT_SECRET</strong><br>5. Value: <strong>your-super-secret-jwt-key-at-least-32-characters-long</strong><br>6. Save and wait for restart (1-2 minutes)<br><br>💡 Since admin user exists, this is definitely a JWT_SECRET configuration issue.`;
+                } else {
+                    section.className = 'test-section error';
+                    result.innerHTML = `❌ FAILED (${response.status})<br>Error: ${data.error}`;
+                }
+                
+                console.log('Login test result:', { status: response.status, data });
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `❌ CONNECTION FAILED<br>Error: ${error.message}`;
+                console.error('Login test error:', error);
+            }
+        }
+
+        async function testHealth() {
+            const section = document.getElementById('health-test');
+            const result = document.getElementById('health-result');
+            
+            result.style.display = 'block';
+            result.innerHTML = '⏳ Testing backend...';
+            
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    section.className = 'test-section success';
+                    result.innerHTML = `✅ BACKEND OK<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    section.className = 'test-section error';
+                    result.innerHTML = `❌ BACKEND ERROR (${response.status})`;
+                }
+                
+            } catch (error) {
+                section.className = 'test-section error';
+                result.innerHTML = `❌ CONNECTION FAILED<br>Error: ${error.message}`;
+                console.error('Health test error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

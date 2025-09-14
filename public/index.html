@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-Talks - Event Tickets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/speakers.css">
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video id="bgVideo" autoplay muted loop playsinline preload="auto">
+            <source src="./images/RTAKLS VIDEO.mov" type="video/quicktime">
+            <source src="./images/RTAKLS VIDEO.mov" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-logo">
+            <img src="/images/RTALK LOGO - PURPLE.png" alt="R-Talks Logo" class="logo">
+            <img src="/images/NITI-AIM-Logo_supported-by-1024x414.png" alt="NITI-AIM Logo" class="logo niti-logo">
+        </div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="#events">Events</a>
+<!--             <a href="#contact" onclick="openContactModal()">Contact</a> -->
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Loading...</h1>
+                <p class="hero-description">Loading event information...</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToTickets()">Browse Events</button>
+                </div>
+            </div>
+            <div class="event-card">
+                <p class="upcoming-label">Upcoming Event</p>
+                <h2 class="event-date" id="eventDate">Loading...</h2>
+                <h3 class="event-name" id="eventTitle">Loading...</h3>
+                <button class="btn btn-primary" onclick="scrollToTickets()">Buy Ticket</button>
+            </div>
+        </section>
+
+        <section class="popular-events" id="events">
+            <h2 class="section-title">Loading...</h2>
+            <p class="section-description">Loading event packages...</p>
+            <div class="events-grid">
+                <div class="event-card loading-card">
+                    <p class="upcoming-label">Loading...</p>
+                    <h3 class="event-name">Loading packages...</h3>
+                    <p class="price">Loading...</p>
+                    <div class="loading-features">Loading event packages from database...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="speakers-section" id="speakers">
+            <h2 class="section-title">Meet Our Speakers</h2>
+            <p class="section-description">Learn from industry leaders and experts who are shaping the future of talent acquisition.</p>
+            <div class="carousel" id="speakersCarousel">
+                <div class="carousel-track">
+                    <!-- Speakers will be inserted here and duplicated for smooth scrolling -->
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-info-section" id="contact-info">
+            <h2 class="section-title">Contact Information</h2>
+            <p class="section-description">Get in touch with us for any inquiries about R-Talks Summit.</p>
+            <div class="contact-info-grid">
+                <div class="contact-card">
+                    <div class="contact-icon phone-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Phone Numbers</h3>
+                    <div class="contact-details">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon email-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Email Address</h3>
+                    <div class="contact-details">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon location-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3 style="color: #ffffff;">Event Location</h3>
+                    <div class="contact-details">
+                        <p>Loading...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Google Maps Section -->
+            <div class="google-maps-container">
+                <h3>Event Location on Map</h3>
+                <div class="map-embed">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2779394758124!2d76.93841731539455!3d11.009616292139983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba858c0b9b48d07%3A0x2e8f7b88d98c5c95!2sRathinam%20Grand%20Hall%2C%20Pollachi%20Main%20Rd%2C%20Eachanari%2C%20Coimbatore%2C%20Tamil%20Nadu%20641021!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                        width="100%" 
+                        height="400" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="map-actions">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=Rathinam+Grand+Hall,+Pollachi+Main+Rd,+Eachanari,+Coimbatore,+Tamil+Nadu+641021" 
+                       target="_blank" 
+                       class="btn btn-primary map-directions-btn">
+                        📍 Get Directions
+                    </a>
+                    <a href="https://www.google.com/maps/search/Rathinam+Grand+Hall,+Pollachi+Main+Rd,+Eachanari,+Coimbatore,+Tamil+Nadu+641021" 
+                       target="_blank" 
+                       class="btn btn-secondary map-view-btn">
+                        🗺️ View in Google Maps
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Modal -->
+        <div id="contactModal" class="modal" style="display: none;">
+            <div class="modal-content contact-modal">
+                <span class="close-btn" onclick="closeContactModal()">&times;</span>
+                <h2>Contact Form</h2>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="contact-name" placeholder="Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="contact-phone" placeholder="Phone*" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="contact-email" placeholder="Email*" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="contact-message" placeholder="Message" rows="5" required></textarea>
+                    </div>
+                    <div id="contact-error-message" style="display:none;background-color:#ff5555;color:white;padding:10px;border-radius:4px;margin:10px 0;"></div>
+                    <div id="contact-success-message" style="display:none;background-color:#4CAF50;color:white;padding:10px;border-radius:4px;margin:10px 0;"></div>
+                    <button type="submit" class="btn btn-primary contact-submit">Submit</button>
+                </form>
+            </div>
+        </div>
+
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.youtube.com/channel/UCOiHkglMLfQAwB9oheLCnjQ" target="_blank">Youtube</a>
+                <a href="https://x.com/rtalks2025" target="_blank">Twitter</a>
+                <a href="#" target="_blank">LinkedIn</a>
+                <a href="https://www.instagram.com/rtalks2025/" target="_blank">Instagram</a>
+            </div>
+            <p class="copyright">Copyright © 2025 R-Talks. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/main.js"></script>
+    <script src="/js/payment.js"></script>
+    <script>
+        // Add this helper function at the start of your scripts
+        async function makeApiCall(endpoint, options = {}) {
+            const defaultOptions = {
+                credentials: 'include',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+            
+            const finalOptions = {
+                ...defaultOptions,
+                ...options,
+                headers: {
+                    ...defaultOptions.headers,
+                    ...(options.headers || {})
+                }
+            };
+            
+            const response = await fetch(`${API_URL}${endpoint}`, finalOptions);
+            if (!response.ok && response.status === 401) {
+                window.location.href = '/admin/login.html';
+                throw new Error('Authentication failed');
+            }
+            return response;
+        }
+
+        // Update your checkAuth function
+        async function checkAuth() {
+            try {
+                const response = await makeApiCall('/admin/check-auth');
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = '/admin/login.html';
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/admin/login.html';
+            }
+        }
+
+        // Update all your API calls to use makeApiCall
+        async function loadDashboardData() {
+            try {
+                const [statsRes, ordersRes, contentRes] = await Promise.all([
+                    makeApiCall('/admin/stats'),
+                    makeApiCall('/admin/orders'),
+                    makeApiCall('/admin/content')
+                ]);
+                
+                // Handle responses...
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+
+        function openContactModal() {
+            document.getElementById('contactModal').style.display = 'flex';
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').style.display = 'none';
+            document.getElementById('contact-form').reset();
+            document.getElementById('contact-error-message').style.display = 'none';
+            document.getElementById('contact-success-message').style.display = 'none';
+        }
+
+        // Handle contact form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('contact-name').value;
+                    const phone = document.getElementById('contact-phone').value;
+                    const email = document.getElementById('contact-email').value;
+                    const message = document.getElementById('contact-message').value;
+                    
+                    // Basic validation
+                    if (!name || !phone || !email || !message) {
+                        document.getElementById('contact-error-message').textContent = 'Please fill in all required fields.';
+                        document.getElementById('contact-error-message').style.display = 'block';
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`${CONFIG.getApiUrl()}/contact`, {
+                            method: 'POST',
+                            ...CONFIG.defaultFetchOptions,
+                            body: JSON.stringify({
+                                name: name,
+                                phone: phone,
+                                email: email,
+                                message: message
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            document.getElementById('contact-success-message').textContent = 'Thank you! Your message has been sent successfully.';
+                            document.getElementById('contact-success-message').style.display = 'block';
+                            document.getElementById('contact-error-message').style.display = 'none';
+                            document.getElementById('contact-form').reset();
+                            
+                            // Close modal after 2 seconds
+                            setTimeout(() => {
+                                closeContactModal();
+                            }, 2000);
+                        } else {
+                            const errorData = await response.json();
+                            document.getElementById('contact-error-message').textContent = errorData.error || 'Failed to send message. Please try again.';
+                            document.getElementById('contact-error-message').style.display = 'block';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        document.getElementById('contact-error-message').textContent = 'Failed to send message. Please try again.';
+                        document.getElementById('contact-error-message').style.display = 'block';
+                    }
+                });
+            }
+        });
+
+        // Video debugging and handling
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('bgVideo');
+            
+            if (video) {
+                console.log('Video element found');
+                
+                video.addEventListener('loadstart', function() {
+                    console.log('Video loading started');
+                });
+                
+                video.addEventListener('canplay', function() {
+                    console.log('Video can start playing');
+                });
+                
+                video.addEventListener('error', function(e) {
+                    console.error('Video error:', e);
+                    console.error('Video error details:', video.error);
+                });
+                
+                video.addEventListener('loadeddata', function() {
+                    console.log('Video data loaded');
+                });
+                
+                // Force video to play
+                video.play().catch(function(error) {
+                    console.error('Error playing video:', error);
+                });
+            } else {
+                console.error('Video element not found');
+            }
+            
+            // Google Maps click to directions functionality
+            const mapEmbed = document.querySelector('.map-embed');
+            if (mapEmbed) {
+                mapEmbed.addEventListener('click', function() {
+                    window.open('https://www.google.com/maps/dir/?api=1&destination=Rathinam+Grand+Hall,+Pollachi+Main+Rd,+Eachanari,+Coimbatore,+Tamil+Nadu+641021', '_blank');
+                });
+                
+                // Add a cursor pointer to indicate clickability
+                mapEmbed.style.cursor = 'pointer';
+                
+                // Add a subtle overlay hint
+                const overlay = document.createElement('div');
+                overlay.className = 'map-click-hint';
+                overlay.innerHTML = '🗺️ Click to get directions';
+                overlay.style.cssText = `
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: rgba(0, 0, 0, 0.7);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 15px;
+                    font-size: 12px;
+                    pointer-events: none;
+                    z-index: 10;
+                    opacity: 0.8;
+                `;
+                mapEmbed.style.position = 'relative';
+                mapEmbed.appendChild(overlay);
+            }
+        });
+        
+        // Dynamic event date formatting - will be updated by main.js
+        // Remove hardcoded date and let the API handle it
+        
+        // Check for payment status in URL parameters
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const orderId = urlParams.get('order');
+            
+            if (paymentStatus && orderId) {
+                let message = '';
+                let isSuccess = false;
+                
+                switch(paymentStatus) {
+                    case 'success':
+                        message = `🎉 Payment Successful! Your ticket has been booked. Order ID: ${orderId}`;
+                        isSuccess = true;
+                        break;
+                    case 'failed':
+                        message = `❌ Payment Failed. Please try again. Order ID: ${orderId}`;
+                        break;
+                    case 'error':
+                        message = `⚠️ Payment Error. Please contact support. Order ID: ${orderId}`;
+                        break;
+                }
+                
+                if (message) {
+                    showPaymentStatusMessage(message, isSuccess);
+                    // Clean URL after showing message
+                    setTimeout(() => {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }, 5000);
+                }
+            }
+        });
+        
+        function showPaymentStatusMessage(message, isSuccess) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${isSuccess ? '#4CAF50' : '#f44336'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-size: 16px;
+                max-width: 90%;
+                text-align: center;
+            `;
+            messageDiv.textContent = message;
+            document.body.appendChild(messageDiv);
+            
+            // Auto-remove after 8 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.parentNode.removeChild(messageDiv);
+                }
+            }, 8000);
+        }
+        
+        function scrollToTickets() {
+            document.getElementById('events').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function buyTicket(type) {
+            window.open("https://rzp.io/rzp/xL6JEhH", "_blank");
+        }
+    </script>
+</body>
+</html>

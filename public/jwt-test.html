@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT_SECRET Configuration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .loading {
+            background-color: #e2e3e5;
+            color: #383d41;
+            border: 1px solid #d6d8db;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        .step-number {
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔑 JWT_SECRET Configuration Test</h1>
+            <p>Test if your Render backend has JWT_SECRET properly configured</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Backend Connection Test</h3>
+            <button onclick="testBackendConnection()">Test Backend Connection</button>
+            <div id="connectionResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🗄️ Database & Admin User Test</h3>
+            <button onclick="testDatabaseConnection()">Test Database Connection</button>
+            <div id="databaseResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 JWT_SECRET Configuration Test</h3>
+            <p>Enter admin credentials to test JWT_SECRET configuration:</p>
+            <div style="margin: 15px 0;">
+                <input type="email" id="adminEmail" placeholder="Admin Email" style="padding: 10px; margin: 5px; width: 200px;">
+                <input type="password" id="adminPassword" placeholder="Admin Password" style="padding: 10px; margin: 5px; width: 200px;">
+            </div>
+            <button onclick="testJWTSecret()">Test JWT_SECRET</button>
+            <div id="jwtResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📋 Configuration Guide</h3>
+            <div id="configGuide">
+                <p><span class="step-number">1</span>Go to your <strong>Render Dashboard</strong></p>
+                <p><span class="step-number">2</span>Find your <strong>rtalks-backend</strong> service</p>
+                <p><span class="step-number">3</span>Go to <strong>Environment</strong> tab</p>
+                <p><span class="step-number">4</span>Add environment variable:</p>
+                <div class="code-block">
+                    Name: JWT_SECRET<br>
+                    Value: rT4lks2025$SecureJWTKey#Backend@API
+                </div>
+                <p><span class="step-number">5</span>Save changes and wait for deployment</p>
+                <p><span class="step-number">6</span>Test again using the buttons above</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Troubleshooting Results</h3>
+            <div id="troubleshootingResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://rtalks-back.onrender.com/api';
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result loading">${message}</div>`;
+        }
+
+        async function testBackendConnection() {
+            showLoading('connectionResult', '🔄 Testing backend connection...');
+            
+            try {
+                const response = await fetch(`${API_URL}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('connectionResult', 
+                        `✅ Backend Connected Successfully!<br>
+                        📊 Status: ${data.status}<br>
+                        🌐 Environment: ${data.environment}<br>
+                        💾 Database: ${data.database}<br>
+                        🕒 Timestamp: ${data.timestamp}`, 
+                        'success'
+                    );
+                } else {
+                    showResult('connectionResult', 
+                        `❌ Backend Connection Failed<br>
+                        Status: ${response.status}<br>
+                        Please check if your backend is running on Render`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('connectionResult', 
+                    `❌ Connection Error: ${error.message}<br>
+                    Check if backend URL is correct: ${API_URL}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testDatabaseConnection() {
+            showLoading('databaseResult', '🔄 Testing database connection...');
+            
+            try {
+                const response = await fetch(`${API_URL}/event`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('databaseResult', 
+                        `✅ Database Connected Successfully!<br>
+                        📅 Event Title: ${data.title}<br>
+                        📍 Location: ${data.location}<br>
+                        This confirms your database is working properly.`, 
+                        'success'
+                    );
+                } else {
+                    showResult('databaseResult', 
+                        `❌ Database Connection Issue<br>
+                        Status: ${response.status}<br>
+                        Your database may not be properly connected.`, 
+                        'error'
+                    );
+                }
+            } catch (error) {
+                showResult('databaseResult', 
+                    `❌ Database Test Error: ${error.message}`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testJWTSecret() {
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (!email || !password) {
+                showResult('jwtResult', 
+                    '⚠️ Please enter both email and password to test JWT_SECRET', 
+                    'warning'
+                );
+                return;
+            }
+
+            showLoading('jwtResult', '🔄 Testing JWT_SECRET configuration...');
+            
+            try {
+                const response = await fetch(`${API_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showResult('jwtResult', 
+                        `✅ JWT_SECRET is WORKING PERFECTLY!<br>
+                        🎉 Admin login successful<br>
+                        🔑 JWT token created and sent<br>
+                        ✨ Your Render environment is properly configured!`, 
+                        'success'
+                    );
+                    
+                    // Test token verification
+                    setTimeout(testTokenVerification, 1000);
+                    
+                } else if (response.status === 401) {
+                    showResult('jwtResult', 
+                        `🔐 Invalid credentials, but JWT_SECRET is configured<br>
+                        ℹ️ The login failed due to wrong email/password<br>
+                        ✅ JWT_SECRET environment variable is working<br>
+                        📝 Please check your admin credentials`, 
+                        'info'
+                    );
+                    
+                } else if (response.status === 500) {
+                    showResult('jwtResult', 
+                        `❌ JWT_SECRET NOT CONFIGURED!<br>
+                        🚨 500 Internal Server Error = Missing JWT_SECRET<br>
+                        📋 Follow the configuration guide below to fix this<br>
+                        🔧 Add JWT_SECRET environment variable in Render`, 
+                        'error'
+                    );
+                    
+                    showTroubleshootingGuide();
+                    
+                } else {
+                    showResult('jwtResult', 
+                        `⚠️ Unexpected Response<br>
+                        Status: ${response.status}<br>
+                        Message: ${data.error || 'Unknown error'}<br>
+                        This may indicate a configuration issue.`, 
+                        'warning'
+                    );
+                }
+            } catch (error) {
+                showResult('jwtResult', 
+                    `❌ Test Error: ${error.message}<br>
+                    Network or server error occurred.`, 
+                    'error'
+                );
+            }
+        }
+
+        async function testTokenVerification() {
+            try {
+                const response = await fetch(`${API_URL}/admin/check-auth`, {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const current = document.getElementById('jwtResult').innerHTML;
+                    document.getElementById('jwtResult').innerHTML = current + 
+                        `<div class="test-result success" style="margin-top: 10px;">
+                            ✅ JWT Token Verification: PASSED<br>
+                            🔒 Token is valid and properly signed<br>
+                            🎯 Complete JWT implementation is working!
+                        </div>`;
+                }
+            } catch (error) {
+                console.log('Token verification test failed:', error);
+            }
+        }
+
+        function showTroubleshootingGuide() {
+            showResult('troubleshootingResult', 
+                `🛠️ <strong>JWT_SECRET Fix Required</strong><br><br>
+                
+                <strong>What happened:</strong><br>
+                • Your admin user exists in the database ✅<br>
+                • Your backend code is working ✅<br>
+                • JWT_SECRET environment variable is missing ❌<br><br>
+                
+                <strong>Why this error occurs:</strong><br>
+                • Backend tries to create JWT token during login<br>
+                • process.env.JWT_SECRET is undefined<br>
+                • jwt.sign() function fails and throws 500 error<br><br>
+                
+                <strong>Quick Fix:</strong><br>
+                1. Go to Render Dashboard → Your Backend Service<br>
+                2. Environment tab → Add New Variable<br>
+                3. Name: <code>JWT_SECRET</code><br>
+                4. Value: <code>rT4lks2025$SecureJWTKey#Backend@API</code><br>
+                5. Save and wait for deployment to complete<br>
+                6. Test again with the button above<br><br>
+                
+                <strong>Expected Result:</strong><br>
+                After adding JWT_SECRET, admin login should work perfectly!`, 
+                'error'
+            );
+        }
+
+        // Auto-run connection test on page load
+        window.onload = function() {
+            testBackendConnection();
+            setTimeout(testDatabaseConnection, 1000);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "rtalks-frontend",
+  "version": "1.0.0",
+  "description": "R-Talks Frontend - Deployed on Vercel",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Static build - no build process needed'",
+    "dev": "serve public -p 3000",
+    "start": "serve public -p 3000"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "keywords": [
+    "rtalks",
+    "event-platform",
+    "frontend",
+    "vercel"
+  ],
+  "author": "Arnold E",
+  "license": "MIT"
+}
