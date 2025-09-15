@@ -1,0 +1,207 @@
+/* ---------------------------
+   Global Reset + Base
+---------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0a0a0a;
+  color: #fff;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ---------------------------
+   Layout + Sections
+---------------------------- */
+main {
+  padding-top: 80px;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.section-description {
+  font-size: 1rem;
+  text-align: center;
+  color: #aaa;
+  margin-bottom: 2rem;
+}
+
+/* ---------------------------
+   Navbar
+---------------------------- */
+.nav-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-link {
+  margin: 0 1rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #a855f7;
+}
+
+/* ---------------------------
+   Hero Section
+---------------------------- */
+.hero-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+  color: #aaa;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease;
+}
+
+.btn-primary {
+  background: #a855f7;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #9333ea;
+}
+
+/* ---------------------------
+   Event Cards
+---------------------------- */
+.event-card {
+  background: #111;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.upcoming-label {
+  font-size: 0.85rem;
+  color: #a855f7;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+}
+
+/* ---------------------------
+   Speakers Section (Static Grid)
+   (Not carousel — handled separately)
+---------------------------- */
+.speakers-section {
+  padding: 4rem 2rem;
+}
+
+.speakers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+}
+
+.speaker-card {
+  background: #111;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.speaker-card:hover {
+  transform: translateY(-6px);
+}
+
+.speaker-card img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.speaker-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.speaker-title {
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+/* ---------------------------
+   Contact + Footer
+---------------------------- */
+.contact-info-section {
+  padding: 4rem 2rem;
+  background: #111;
+}
+
+.footer-content {
+  padding: 2rem;
+  background: #0a0a0a;
+  text-align: center;
+  color: #aaa;
+}
+
+.footer-content .social-links a {
+  margin: 0 0.5rem;
+  color: #aaa;
+  text-decoration: none;
+}
+
+.footer-content .social-links a:hover {
+  color: #a855f7;
+}

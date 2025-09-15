@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Ms. Victoria Jenifer",
+    "title": "HR Manager",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Victoria.png"
+  },
+  {
+    "id": 2,
+    "name": "Mr. Vijaya Prabo Kesavan",
+    "title": "Manager HR & Admin",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Kesavan.png"
+  },
+  {
+    "id": 3,
+    "name": "Mr. V. Praveen Viswanathan",
+    "title": "Manager HR Campus Recruitment",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Praveen.png"
+  },
+  {
+    "id": 4,
+    "name": "Mr. Mohanbabu Balachandran",
+    "title": "Technology Head Vice President IT",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Mohan Babu.png"
+  },
+  {
+    "id": 5,
+    "name": "Ms. Saranya Muruganantham",
+    "title": "Sr. HRBP Lead",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Saranya.png"
+  },
+  {
+    "id": 6,
+    "name": "Mr. Vignesh Paramasivam",
+    "title": "Senior Manager HR",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Vignesh.png"
+  },
+  {
+    "id": 7,
+    "name": "Mr. Raghu Paramasivam",
+    "title": "India Campus Recruitment Lead",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Raghu.png"
+  },
+  {
+    "id": 8,
+    "name": "Mr. Rahul P",
+    "title": "Associate Director",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Rahul.png"
+  },
+  {
+    "id": 9,
+    "name": "Mr. Vijayan R",
+    "title": "Head of Global Campus and Managed Services Hiring",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Vijayan.png"
+  },
+  {
+    "id": 10,
+    "name": "Mr. Joshua David M D",
+    "title": "India Campus Head",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Joshua.png"
+  },
+  {
+    "id": 11,
+    "name": "Mr. Prashath P",
+    "title": "Head Campus Recruitment",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Prasath.png"
+  },
+  {
+    "id": 12,
+    "name": "Mr. Santosh Mani",
+    "title": "Director - Human Resources",
+    "company": "",
+    "bio": "",
+    "image_url": "images/speakers/Santhosh.png"
+  }
+]

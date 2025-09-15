@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-Talks - Event Tickets</title>
+    <link rel="icon" type="image/jpeg" href="images/unnamed.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/unnamed.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkfK0D1B9Q14V7S3Uz7Dnk3a1JpN96CB2TF+qsSVqS+8CA0nVddOZxjKw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/speakers.css">
+    <link rel="stylesheet" href="css/grid.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <style>
+        main {
+            padding-top: 80px;
+        }
+        /* Contact Modal Form Theme */
+        #contactModal {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 100000; /* ensure above navbar */
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(3px);
+        }
+        
+        #contactModal.show {
+            display: flex;
+        }
+        #contactModal .modal-content.contact-modal {
+            background: linear-gradient(180deg, #ffffff 0%, #f7f3ff 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            padding: 28px 28px 22px 28px;
+            max-width: 560px;
+            width: 92vw;
+            font-family: 'Inter', Arial, sans-serif;
+            color: #2c0050;
+            position: relative;
+            border: 1px solid #e4d9ff;
+        }
+        #contactModal h2 {
+            color: #6b2bd9;
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            font-weight: 800;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(107,43,217,0.25);
+        }
+        #contactModal label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #2c0050;
+        }
+        #contactModal input,
+        #contactModal textarea {
+            width: 100%;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            border: 1px solid #d1c4e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #f6f1ff;
+            color: #2c0050;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        #contactModal input:focus,
+        #contactModal textarea:focus {
+            border-color: #7c2ae8;
+            outline: none;
+        }
+        #contactModal button[type="submit"] {
+            background: linear-gradient(90deg, #7c2ae8 0%, #9b59ff 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(124,42,232,0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        #contactModal button[type="submit"]:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(124,42,232,0.45);
+        }
+        #contactModal .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 1.6rem;
+            color: #6b2bd9;
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            background: #f1e9ff;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        @media (max-width: 600px) {
+            #contactModal .modal-content.contact-modal {
+                padding: 12px 4vw 12px 4vw;
+                max-width: 98vw;
+                margin: 16px auto;
+            }
+            #contactModal h2 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+            #contactModal label {
+                font-size: 0.95rem;
+            }
+            #contactModal input,
+            #contactModal textarea {
+                font-size: 0.95rem;
+                padding: 8px 8px;
+                margin-bottom: 12px;
+            }
+            #contactModal button[type="submit"] {
+                padding: 10px 0;
+                width: 100%;
+                font-size: 1rem;
+            }
+            #contactModal .close-btn {
+                top: 10px;
+                right: 12px;
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 400px) {
+            #contactModal .modal-content.contact-modal {
+                padding: 6px 2vw 6px 2vw;
+            }
+            #contactModal h2 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <video id="bgVideo" autoplay muted loop playsinline preload="auto">
+            <source src="./images/RTAKLS VIDEO.mov?v=2" type="video/quicktime">
+            <source src="./images/RTAKLS VIDEO.mov?v=2" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <nav class="nav-container">
+        <div class="nav-inner">
+            <div class="logo-container">
+                <img src="images/RTALK LOGO - PURPLE.png" alt="R-Talks Logo" class="logo">
+                <img src="images/NITI-AIM-Logo_supported-by-1024x414.png" alt="NITI-AIM Logo" class="niti-logo">
+            </div>
+            <div class="menu-container">
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6h16M4 12h16m-16 6h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="nav-menu">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="#events" class="nav-link">Events</a>
+                    <a href="#contact" class="nav-link">Contact</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        function toggleMobileMenu() {
+            const navMenu = document.querySelector('.nav-menu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const navMenu = document.querySelector('.nav-menu');
+            const isClickInside = navMenu.contains(e.target) || e.target.closest('.mobile-menu-btn');
+            if (!isClickInside && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-menu').classList.remove('active');
+            });
+        });
+    </script>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Join R-TALKS Summit 2025</h1>
+                <p class="hero-description">Discover groundbreaking ideas, innovations, and strategies in human resource management.
+                    This summit brings together thought leaders, industry experts, and professionals to explore the future of workforce dynamics and organizational success.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToTickets()">Browse Events</button>
+                </div>
+            </div>
+            <div class="event-card">
+                <p class="upcoming-label">Upcoming Event</p>
+                <h2 class="event-date">20th September</h2>
+                <p class="event-time"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" stroke="#6a6a69" stroke-width="2"/><path d="M12 7v6l4 2" stroke="#6a6a69" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>9:00 AM - 1:00 PM</p>
+                <h3 class="event-name">R-TALKS SUMMIT 2025</h3>
+                <button class="btn btn-primary" onclick="scrollToTickets()">Buy Ticket</button>
+            </div>
+        </section>
+
+        <section class="popular-events" id="events">
+            <h2 class="section-title">Our Event Passes</h2>
+            <p class="section-description">Choose the pass that best suits your professional goals and aspirations.</p>
+            <div class="events-grid">
+                <div class="event-card">
+                    <p class="upcoming-label">Aspiring Professional</p>
+                    <h3 class="event-name">Professional Pass</h3>
+                    <p class="price">₹200</p>
+                    <p class="price-note">(Exclus. GST)</p>
+                    <ul class="features">
+                        <li>Certificate of Participation</li>
+                        <li>Career Guidance</li>
+                    </ul>
+                    <button class="btn btn-primary" onclick="buyTicket('professional')">Get Tickets</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="speakers-section" id="speakers">
+            <h2 class="section-title">Meet Our Speakers</h2>
+            <p class="section-description">Learn from industry leaders and experts who are shaping the future of talent acquisition.</p>
+            <div class="speakers-wrapper">
+                <div class="speakers-carousel">
+                    <div class="speakers-track" id="speakersTrack">
+                        <!-- Speakers will be duplicated into an infinite loop -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-info-section" id="contact-info">
+            <h2 class="section-title">Contact Information</h2>
+            <p class="section-description">Get in touch with us for any inquiries about R-Talks Summit.</p>
+            <div class="contact-info-grid">
+                <div class="contact-card">
+                    <div class="contact-icon phone-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Phone Numbers</h3>
+                    <div class="contact-details">
+                        <p>+91 99406 25080</p>
+                        <p>+91 96776 72310</p>
+                        <p>+91 93611 01881</p>
+                        <p>+91 94438 39807</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon email-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Email Address</h3>
+                    <div class="contact-details">
+                        <p>manikandan.rtc@rathinam.in</p>
+                    </div>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon location-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h3>Event Location</h3>
+                    <div class="contact-details">
+                        <p>Rathinam Grand Hall</p>
+                        <p>Eachanari - 021</p>
+                        <p>Rathinam Tech Park</p>
+                        <p>Pollachi Main Rd, Eachanari</p>
+                        <p>Coimbatore, Tamil Nadu 641021</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Google Maps Section -->
+            <div class="google-maps-container">
+                <h3>Event Location on Map</h3>
+                <div class="map-embed">
+            
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3917.436565278521!2d76.977265!3d10.930358000000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba85b007e093c0d%3A0x7ae518fe1603a29b!2sRathinam%20Grand%20Hall!5e0!3m2!1sen!2sin!4v1757925066484!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+                <div class="map-actions">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=Rathinam+Grand+Hall,+Pollachi+Main+Rd,+Eachanari,+Coimbatore,+Tamil+Nadu+641021" 
+                       target="_blank" 
+                       class="btn btn-primary map-directions-btn">
+                        📍 Get Directions
+                    </a>
+                    <a href="https://www.google.com/maps/search/Rathinam+Grand+Hall,+Pollachi+Main+Rd,+Eachanari,+Coimbatore,+Tamil+Nadu+641021" 
+                       target="_blank" 
+                       class="btn btn-secondary map-view-btn">
+                        🗺️ View in Google Maps
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Modal -->
+        <div id="contactModal" class="modal">
+            <div class="modal-content contact-modal">
+                <span class="close-btn" onclick="closeContactModal()">&times;</span>
+                <h2>Contact Form</h2>
+                <form id="contact-form" action="https://formspree.io/f/xqadoqqo" method="POST" accept-charset="utf-8">
+                  <input type="hidden" name="_subject" value="R-Talks Contact Submission">
+                  <input type="hidden" name="_captcha" value="false">
+
+                  <label for="name">Name:</label>
+                  <input type="text" id="name" name="name" required>
+
+                  <label for="email">Email:</label>
+                  <input type="email" id="email" name="email" required>
+
+                  <label for="phone">Phone:</label>
+                  <input type="tel" id="phone" name="phone" 
+                         pattern="[6-9][0-9]{9}" 
+                         maxlength="10" 
+                         placeholder="9876543210" 
+                         required>
+
+                  <label for="message">Message:</label>
+                  <textarea id="message" name="message" rows="5" required></textarea>
+
+                  <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+
+
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.youtube.com/channel/UCOiHkglMLfQAwB9oheLCnjQ" target="_blank">Youtube</a>
+                <a href="https://x.com/rtalks2025" target="_blank">Twitter</a>
+                <a href="https://www.linkedin.com/in/rtalks-aicraise-183864353/" target="_blank">LinkedIn</a>
+                <a href="https://www.instagram.com/rtalks2025/" target="_blank">Instagram</a>
+            </div>
+            <p class="copyright">Copyright © 2025 R-Talks. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/static-main.js"></script>
+    <script src="js/navbar.js"></script>
+</body>
+</html>
